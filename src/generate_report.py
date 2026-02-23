@@ -6,6 +6,14 @@ from openpyxl.utils import get_column_letter
 import matplotlib.pyplot as plt
 from openpyxl.drawing.image import Image as XLImage
 import io
+import smtplib
+import os
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
+from dotenv import load_dotenv
+from datetime import datetime
 
 conn = sqlite3.connect('data/sales.db')
 cursor = conn.cursor()
@@ -171,4 +179,32 @@ for col in ws_raw.columns:
 # Freeze the header row so it stays visible when scrolling
 ws_raw.freeze_panes = 'A2'
 
+load_dotenv()
+
+def send_email_report():
+    email_address  = os.getenv('EMAIL_ADDRESS')
+    email_password = os.getenv('EMAIL_PASSWORD')
+    email_receiver = os.getenv('EMAIL_RECEIVER')
+
+    msg = MIMEMultipart()
+    msg['From']    = email_address
+    msg['To']      = email_receiver
+    msg['Subject'] = f'Automated Sales Report - {datetime.now().strftime("%B %d, %Y")}'
+
+    body = MIMEText("Please find attached the latest automated sales report.", 'plain')
+    msg.attach(body)
+
+    with open(output_path, 'rb') as f:
+        attachment = MIMEBase('application', 'octet-stream')
+        attachment.set_payload(f.read())
+        encoders.encode_base64(attachment)
+        attachment.add_header('Content-Disposition', f'attachment; filename=sales_report.xlsx')
+        msg.attach(attachment)
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(email_address, email_password)
+        server.sendmail(email_address, email_receiver, msg.as_string())
+        print("Report emailed successfully!")
+
 wb.save(output_path)
+send_email_report()
