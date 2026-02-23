@@ -1,7 +1,7 @@
 # Automated Sales Reporting System
 
 ## Description
-A Python automation project that connects to a SQLite database, pulls sales data, analyzes it, and automatically generates a professional Excel report with styled tables and charts — scheduled to run daily or weekly and delivered automatically via email.
+A Python automation project that connects to a SQLite database, pulls sales data, analyzes it, and automatically generates a professional Excel report with styled tables and charts — scheduled to run daily or weekly, delivered automatically via email, and viewable through a live web dashboard.
 
 ## Tech Stack
 - Python 3
@@ -11,6 +11,7 @@ A Python automation project that connects to a SQLite database, pulls sales data
 - Matplotlib
 - Schedule
 - Smtplib
+- Flask
 
 ## Project Structure
 automated-sales-report/
@@ -22,14 +23,17 @@ automated-sales-report/
 │   ├── create_database.py # Creates and populates the database
 │   ├── query_sales.py     # Queries and displays sales data
 │   ├── generate_report.py # Generates and emails the styled Excel report
-│   └── automate_report.py # Schedules the report automatically
+│   ├── automate_report.py # Schedules the report automatically
+│   ├── dashboard.py       # Flask web dashboard
+│   └── templates/
+│       └── dashboard.html # Dashboard HTML template
 └── README.md
 
 ## Setup
 1. Download or copy the project files into a folder
 2. Create a virtual environment: `python -m venv env`
 3. Activate it: `source env/Scripts/activate`
-4. Install dependencies: `pip install pandas openpyxl matplotlib schedule python-dotenv`
+4. Install dependencies: `pip install pandas openpyxl matplotlib schedule python-dotenv flask`
 5. Create a `.env` file with your email credentials:
    - EMAIL_ADDRESS=your_email@gmail.com
    - EMAIL_PASSWORD=your_app_password
@@ -40,3 +44,4 @@ automated-sales-report/
 - Run once: `python src/automate_report.py`
 - Run daily at 08:00: `python src/automate_report.py --daily`
 - Run every Monday at 08:00: `python src/automate_report.py --weekly`
+- Launch dashboard: `python src/dashboard.py` then open `http://localhost:5000`
